@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#f8d8e8"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default">
+<title>Color Disney</title>
+<link rel="manifest" href="manifest.webmanifest">
+<style>
+:root{--pink:#f8d8e8;--pink2:#f3aeca;--deep:#9d426f;--ink:#4e3543;--cream:#fff9fc;--line:#f0d6e3;--muted:#876c7a}
+*{box-sizing:border-box}body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:linear-gradient(180deg,#fff7fb,#fff 55%);color:var(--ink)}
+header{padding:calc(16px + env(safe-area-inset-top)) 18px 16px;background:var(--pink);border-radius:0 0 24px 24px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.brand{font-size:24px;font-weight:850;letter-spacing:-.7px}.brand span{color:var(--deep)}.sub{font-size:12px;color:#865c73;margin-top:3px}
+main{max-width:900px;margin:auto;padding:16px 14px 90px}.tabs{display:flex;gap:7px;overflow:auto;margin:0 0 16px;padding-bottom:3px}.tab{border:1px solid var(--line);background:white;color:var(--deep);border-radius:999px;padding:10px 14px;font-weight:700;white-space:nowrap}.tab.active{background:var(--deep);color:white}
+h2{font-size:19px;margin:12px 0}.muted{color:var(--muted);font-size:13px;line-height:1.45}.panel{background:white;border:1px solid var(--line);border-radius:18px;padding:15px;margin:12px 0;box-shadow:0 4px 16px #8c47600a}
+.row{display:flex;gap:9px;align-items:center;flex-wrap:wrap}.row>*{flex:1}.btn{border:0;background:var(--deep);color:white;border-radius:12px;padding:11px 13px;font-weight:750;font-size:14px}.btn.light{background:#fae7f0;color:var(--deep);border:1px solid var(--line)}.btn.small{padding:7px 10px;font-size:12px}.input,select{width:100%;padding:12px;border:1px solid var(--line);border-radius:12px;background:#fffafd;color:var(--ink);font:inherit;margin:5px 0 10px}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}@media(min-width:620px){.grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.book{border:1px solid var(--line);border-radius:16px;overflow:hidden;background:white}.cover{height:115px;background:linear-gradient(135deg,#fbe4ef,#f6c5dc);display:grid;place-items:center;font-size:40px}.bookbody{padding:11px}.booktitle{font-weight:800;font-size:14px}.pageimg{width:100%;height:140px;object-fit:contain;background:#fff7fb;border-radius:12px;border:1px solid var(--line)}.empty{padding:24px 12px;text-align:center;color:var(--muted);font-size:13px}.stat{background:#fff5fa;border-radius:14px;padding:12px;text-align:center}.stat b{font-size:22px;display:block;color:var(--deep)}.hidden{display:none!important}.palette{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}.swatch{border:1px solid var(--line);border-radius:10px;padding:7px 5px;text-align:center;font-size:11px;background:#fff}.dot{width:25px;height:25px;border-radius:50%;border:1px solid #0002;margin:0 auto 5px;background:#eee}.page-card{display:flex;gap:10px;align-items:center}.page-card img{width:70px;height:80px;object-fit:cover;border-radius:10px;background:#fff5fa}.timer{font-size:34px;font-weight:850;letter-spacing:1px;text-align:center;margin:8px}.footer{position:fixed;bottom:0;left:0;right:0;text-align:center;background:#fffafcdd;backdrop-filter:blur(10px);padding:10px;font-size:11px;color:var(--muted);border-top:1px solid var(--line)}
+label{font-size:13px;font-weight:700;display:block}input[type=file]{font-size:13px;max-width:100%}.notice{background:#fff5d8;border:1px solid #f3e3a9;padding:11px;border-radius:12px;font-size:12px;line-height:1.4}
+</style></head><body>
+<header><div><div class="brand">♡ Color <span>Disney</span></div><div class="sub">Twoja biblioteka kolorowania</div></div><button class="btn light small" id="exportBtn">Kopia danych</button></header>
+<main>
+<div class="tabs" id="tabs">
+<button class="tab active" data-tab="home">Start</button><button class="tab" data-tab="library">Biblioteka</button><button class="tab" data-tab="pages">Strony</button><button class="tab" data-tab="colors">Languo 144</button><button class="tab" data-tab="progress">Postępy</button>
+</div>
+<section id="home">
+<div class="panel"><h2>Witaj w Color Disney 🌷</h2><p class="muted">Dodawaj własne książki i zdjęcia stron, wracaj do nich później i zapisuj czas kolorowania.</p><div class="row"><div class="stat"><b id="bookCount">0</b><span class="muted">książek</span></div><div class="stat"><b id="pageCount">0</b><span class="muted">stron</span></div><div class="stat"><b id="doneCount">0</b><span class="muted">ukończonych</span></div></div></div>
+<div class="panel"><h2>Dodaj książkę</h2><label>Nazwa książki</label><input class="input" id="bookName" placeholder="np. Disney – księżniczki"><label>Okładka (opcjonalnie)</label><input type="file" id="bookCover" accept="image/*"><button class="btn" id="addBook">＋ Zapisz książkę</button></div>
+<div class="panel"><h2>Dodaj stronę do książki</h2><label>Wybierz książkę</label><select id="pageBook"></select><label>Nazwa lub numer strony</label><input class="input" id="pageName" placeholder="np. Strona 12 – Ariel"><label>Zdjęcie strony</label><input type="file" id="pageFile" accept="image/*" capture="environment"><button class="btn" id="addPage">＋ Zapisz stronę</button><p class="muted">Zdjęcia zapisują się w pamięci tej przeglądarki. Nie czyścij danych Safari, jeśli chcesz je zachować.</p></div>
+<div class="notice">Katalog książek nie zawiera automatycznie skanów wszystkich książek Disneya. Dodaj zdjęcia stron ze swoich egzemplarzy. Funkcja wyszukiwania książek online wymaga osobnego katalogu/API.</div>
+</section>
+<section id="library" class="hidden"><h2>Moje książki</h2><input class="input" id="bookSearch" placeholder="Szukaj książki…"><div id="booksGrid" class="grid"></div><div id="booksEmpty" class="empty">Nie masz jeszcze książek. Dodaj pierwszą na karcie Start.</div></section>
+<section id="pages" class="hidden"><h2>Moje strony</h2><input class="input" id="pageSearch" placeholder="Szukaj strony…"><select id="filterBook"></select><div id="pagesList"></div><div id="pagesEmpty" class="empty">Dodaj zdjęcie strony, aby pojawiła się tutaj.</div></section>
+<section id="colors" class="hidden"><h2>Paleta Languo PLUS · 144</h2><p class="muted">Lista kodów poniżej opiera się na opublikowanych wykazach zestawów Languo. Nie wszystkie kody zestawu 144 udało się niezależnie potwierdzić, dlatego brakujące miejsca nie są uzupełniane zmyślonymi kolorami. Wyświetlane barwy to przybliżone podglądy, nie gwarantowane odwzorowanie tuszu.</p><input class="input" id="colorSearch" placeholder="Szukaj kodu lub grupy…"><div id="palette" class="palette"></div><div id="paletteCount" class="muted"></div><div class="notice" style="margin-top:12px">Aby dopasować rzeczywiste odcienie, najlepiej dodać zdjęcie własnego wzornika Languo przy dobrym świetle. Kody na stronie nie wystarczą do wiarygodnego odtworzenia koloru.</div></section>
+<section id="progress" class="hidden"><h2>Postępy i galeria</h2><div class="panel"><div class="timer" id="timer">00:00:00</div><div class="row"><button class="btn" id="timerStart">Start</button><button class="btn light" id="timerPause">Pauza</button><button class="btn light" id="timerReset">Wyzeruj</button></div><p class="muted">Stoper zapisuje sesje po naciśnięciu „Zapisz sesję”.</p><button class="btn" id="saveSession">Zapisz sesję</button></div><div class="panel"><h2>Historia sesji</h2><div id="sessions"></div></div><div class="panel"><h2>Ukończone strony / galeria</h2><div id="gallery" class="grid"></div><div id="galleryEmpty" class="empty">Ukończone strony pojawią się tutaj.</div></div></section>
+</main><div class="footer">Color Disney · zapis lokalny na tym urządzeniu</div>
+<script>
+const $=id=>document.getElementById(id);
+let data={books:[],pages:[],sessions:[]};try{data=JSON.parse(localStorage.getItem('colorDisneyV2'))||data}catch(e){}
+let elapsed=0, startedAt=null, tick=null;
+function persist(){try{localStorage.setItem('colorDisneyV2',JSON.stringify(data));render()}catch(e){alert('Brak miejsca na zapis zdjęć. Spróbuj dodać mniejsze zdjęcie.');}}
+function escapeHtml(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function fmt(ms){let s=Math.floor(ms/1000);return [Math.floor(s/3600),Math.floor(s%3600/60),s%60].map(n=>String(n).padStart(2,'0')).join(':')}
+function currentElapsed(){return elapsed+(startedAt?Date.now()-startedAt:0)}
+function updateTimer(){$('timer').textContent=fmt(currentElapsed())}
+function tab(name){document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===name));document.querySelectorAll('main section').forEach(s=>s.classList.toggle('hidden',s.id!==name))}
+document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>tab(b.dataset.tab));
+function readImage(file){return new Promise((resolve,reject)=>{if(!file){resolve('');return}const r=new FileReader();r.onload=()=>resolve(r.result);r.onerror=reject;r.readAsDataURL(file)})}
+$('addBook').onclick=async()=>{let name=$('bookName').value.trim();if(!name)return alert('Wpisz nazwę książki.');let cover=await readImage($('bookCover').files[0]);data.books.push({id:crypto.randomUUID(),name,cover,created:new Date().toISOString()});$('bookName').value='';$('bookCover').value='';persist();};
+$('addPage').onclick=async()=>{let bookId=$('pageBook').value,name=$('pageName').value.trim(),file=$('pageFile').files[0];if(!bookId)return alert('Najpierw dodaj książkę.');if(!file)return alert('Wybierz zdjęcie strony.');let image=await readImage(file);data.pages.push({id:crypto.randomUUID(),bookId,name:name||'Strona',image,done:false,seconds:0,created:new Date().toISOString()});$('pageName').value='';$('pageFile').value='';persist();tab('pages')};
+$('bookSearch').oninput=renderBooks;$('pageSearch').oninput=renderPages;$('filterBook').onchange=renderPages;$('colorSearch').oninput=renderPalette;
+function render(){ $('bookCount').textContent=data.books.length;$('pageCount').textContent=data.pages.length;$('doneCount').textContent=data.pages.filter(p=>p.done).length;fillSelects();renderBooks();renderPages();renderPalette();renderSessions();renderGallery(); }
+function fillSelects(){let opts=data.books.map(b=>`<option value="${b.id}">${escapeHtml(b.name)}</option>`).join('');$('pageBook').innerHTML=opts||'<option value="">Dodaj książkę najpierw</option>';$('filterBook').innerHTML='<option value="">Wszystkie książki</option>'+opts}
+function renderBooks(){let q=$('bookSearch').value.toLowerCase();let bs=data.books.filter(b=>b.name.toLowerCase().includes(q));$('booksGrid').innerHTML=bs.map(b=>`<div class="book"><div class="cover">${b.cover?`<img src="${b.cover}" style="width:100%;height:115px;object-fit:cover">`:'📚'}</div><div class="bookbody"><div class="booktitle">${escapeHtml(b.name)}</div><p class="muted">${data.pages.filter(p=>p.bookId===b.id).length} stron</p><button class="btn light small" onclick="showBookPages('${b.id}')">Otwórz strony</button> <button class="btn light small" onclick="deleteBook('${b.id}')">Usuń</button></div></div>`).join('');$('booksEmpty').classList.toggle('hidden',bs.length>0)}
+function showBookPages(id){$('filterBook').value=id;tab('pages');renderPages()}
+function deleteBook(id){if(!confirm('Usunąć książkę i jej strony?'))return;data.books=data.books.filter(b=>b.id!==id);data.pages=data.pages.filter(p=>p.bookId!==id);persist()}
+function renderPages(){let q=$('pageSearch').value.toLowerCase(),f=$('filterBook').value;let ps=data.pages.filter(p=>(!f||p.bookId===f)&&((p.name+' '+(data.books.find(b=>b.id===p.bookId)?.name||'')).toLowerCase().includes(q)));$('pagesList').innerHTML=ps.map(p=>`<div class="panel page-card"><img src="${p.image}"><div style="flex:1"><b>${escapeHtml(p.name)}</b><div class="muted">${escapeHtml(data.books.find(b=>b.id===p.bookId)?.name||'')}</div><div class="muted">${p.done?'Ukończona':'W trakcie'} · ${fmt((p.seconds||0)*1000)}</div><div class="row" style="margin-top:7px"><button class="btn small" onclick="startPage('${p.id}')">Koloruję</button><button class="btn light small" onclick="toggleDone('${p.id}')">${p.done?'Cofnij ukończenie':'Ukończ'}</button><button class="btn light small" onclick="deletePage('${p.id}')">Usuń</button></div></div></div>`).join('');$('pagesEmpty').classList.toggle('hidden',ps.length>0)}
+function startPage(id){let p=data.pages.find(p=>p.id===id);if(p){window.currentPage=id;elapsed=(p.seconds||0)*1000;startedAt=null;updateTimer();tab('progress')}}
+function toggleDone(id){let p=data.pages.find(p=>p.id===id);if(p){p.done=!p.done;p.doneAt=p.done?new Date().toISOString():null;persist()}}
+function deletePage(id){if(confirm('Usunąć tę stronę?')){data.pages=data.pages.filter(p=>p.id!==id);persist()}}
+$('timerStart').onclick=()=>{if(!startedAt){startedAt=Date.now();tick=setInterval(updateTimer,250)}};
+$('timerPause').onclick=()=>{if(startedAt){elapsed+=Date.now()-startedAt;startedAt=null;clearInterval(tick);updateTimer()}};
+$('timerReset').onclick=()=>{startedAt=null;elapsed=0;clearInterval(tick);updateTimer()};
+$('saveSession').onclick=()=>{let ms=currentElapsed();if(ms<=0)return alert('Najpierw uruchom stoper.');let id=window.currentPage;let p=data.pages.find(p=>p.id===id);if(p)p.seconds=(p.seconds||0)+Math.floor(ms/1000);data.sessions.unshift({date:new Date().toISOString(),ms,pageName:p?.name||'Sesja ogólna'});elapsed=0;startedAt=null;clearInterval(tick);updateTimer();persist();alert('Sesja zapisana.')};
+function renderSessions(){$('sessions').innerHTML=data.sessions.length?data.sessions.slice(0,30).map(s=>`<div class="panel"><b>${escapeHtml(s.pageName)}</b><div class="muted">${new Date(s.date).toLocaleString('pl-PL')} · ${fmt(s.ms)}</div></div>`).join(''):'<div class="empty">Brak zapisanych sesji.</div>'}
+function renderGallery(){let ps=data.pages.filter(p=>p.done);$('gallery').innerHTML=ps.map(p=>`<div class="book"><img src="${p.image}" style="width:100%;height:130px;object-fit:contain;background:#fff7fb"><div class="bookbody"><b>${escapeHtml(p.name)}</b><div class="muted">${escapeHtml(data.books.find(b=>b.id===p.bookId)?.name||'')}</div><button class="btn light small" onclick="downloadImage('${p.id}')">Zapisz zdjęcie</button></div></div>`).join('');$('galleryEmpty').classList.toggle('hidden',ps.length>0)}
+function downloadImage(id){let p=data.pages.find(p=>p.id===id);if(!p)return;let a=document.createElement('a');a.href=p.image;a.download=(p.name||'kolorowanka')+'.jpg';a.click()}
+const colorGroups=[
+['Colour of Skin 2',['BG-191','BG-192','BG-193','BG-196','BG-197','BG-199']],
+['Colour of Skin',['BG-601','BG-602','BG-603','BG-604','BG-606','BG-609']],
+['Colourful Black',['BG-151','BG-152','BG-154','BG-155','BG-157','BG-158']],
+['Dopamine',['BG-181','BG-183','BG-184','BG-185','BG-187','BG-189']],
+['Maillard',['BG-132','BG-133','BG-135','BG-136','BG-137','BG-139']],
+['Monet Purple',['BG-501','BG-502','BG-503','BG-505','BG-506','BG-508']],
+['Natural Forest',['BG-801','BG-803','BG-804','BG-805','BG-807','BG-809']],
+['Nordic Blue',['BG-02','BG-202','BG-102','BG-201','BG-301','BG-101']],
+['Red Lipstick',['BG-161','BG-162','BG-164','BG-166','BG-167','BG-169']],
+['Reddish Yellow',['BG-902','BG-903','BG-904','BG-906','BG-907','BG-909']],
+['Sea Salt Blue',['BG-701','BG-702','BG-704','BG-705','BG-707','BG-709']],
+['Sketch',['BG-111','BG-112','BG-113','BG-114','BG-116','BG-117']],
+['Sweet Pink',['BG-121','BG-122','BG-124','BG-125','BG-126','BG-128']],
+['Warm Yellow',['BG-171','BG-173','BG-175','BG-176','BG-177','BG-178']]
+];
+const approximate={
+'BG-02':'#8fb9de','BG-101':'#729bc5','BG-102':'#98c4df','BG-111':'#c2a27d','BG-112':'#b98f6f','BG-113':'#d7b79a','BG-114':'#9c795e','BG-116':'#e0c5a3','BG-117':'#7d5c47',
+'BG-121':'#f7c6d9','BG-122':'#f5abc9','BG-124':'#ec8fb5','BG-125':'#e777a1','BG-126':'#d95f8d','BG-128':'#c64c79',
+'BG-151':'#343139','BG-152':'#51474e','BG-154':'#71656b','BG-155':'#93888e','BG-157':'#b5adb2','BG-158':'#d1cbd0',
+'BG-161':'#d64c57','BG-162':'#bf3044','BG-164':'#a71f39','BG-166':'#e9686d','BG-167':'#ed8b89','BG-169':'#8f1b33',
+'BG-171':'#fff0a3','BG-173':'#ffe079','BG-175':'#ffd15a','BG-176':'#ffc343','BG-177':'#f3ae28','BG-178':'#dc9419',
+'BG-181':'#f4b9b4','BG-183':'#ed8b9b','BG-184':'#f078a3','BG-185':'#d65f9c','BG-187':'#a94d99','BG-189':'#7d438f',
+'BG-191':'#e7c6a8','BG-192':'#d8ad8a','BG-193':'#c99878','BG-196':'#b47d61','BG-197':'#9c674e','BG-199':'#7d503e',
+'BG-201':'#679fd1','BG-202':'#4286c0','BG-301':'#8aabd8',
+'BG-132':'#a78365','BG-133':'#bd9471','BG-135':'#8c694d','BG-136':'#d0ad8b','BG-137':'#70513e','BG-139':'#513b31',
+'BG-501':'#c3a4e5','BG-502':'#b18bdb','BG-503':'#9b73c7','BG-505':'#875ab2','BG-506':'#71469b','BG-508':'#56357f',
+'BG-601':'#f2d3b6','BG-602':'#e9c19e','BG-603':'#dbac83','BG-604':'#c99268','BG-606':'#b57b51','BG-609':'#93603f',
+'BG-701':'#c5e4f4','BG-702':'#9dd3ed','BG-704':'#76bfe3','BG-705':'#5aa6d4','BG-707':'#3f8cbd','BG-709':'#286e9e',
+'BG-801':'#a8c6a0','BG-803':'#83b184','BG-804':'#689b6c','BG-805':'#4f8355','BG-807':'#376b46','BG-809':'#245438',
+'BG-902':'#f9c18c','BG-903':'#f4a86c','BG-904':'#ef9254','BG-906':'#e87c3c','BG-907':'#d9682f','BG-909':'#b95129'
+};
+function renderPalette(){let q=$('colorSearch').value.toLowerCase();let items=colorGroups.flatMap(([g,codes])=>codes.map(code=>({g,code}))).filter(x=>(x.code+' '+x.g).toLowerCase().includes(q));$('palette').innerHTML=items.map(x=>`<div class="swatch"><div class="dot" style="background:${approximate[x.code]||'#e8e3e6'}"></div><b>${x.code}</b><div>${x.g}</div></div>`).join('');$('paletteCount').textContent=`Wyświetlono ${items.length} znanych kodów z listy roboczej; to nie jest potwierdzona kompletna lista 144 odcieni.`}
+$('exportBtn').onclick=()=>{let blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});let a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='color-disney-kopia-danych.json';a.click();URL.revokeObjectURL(a.href)};
+render();
+</script></body></html>
